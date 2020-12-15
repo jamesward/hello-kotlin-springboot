@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import org.springframework.boot.WebApplicationType
-import org.springframework.fu.kofu.application
+import org.springframework.fu.kofu.reactiveWebApplication
 import org.springframework.fu.kofu.webflux.webFlux
 import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.bodyValueAndAwait
 
-suspend fun sayHello(request: ServerRequest): ServerResponse {
-    return ok().bodyValueAndAwait("hello, world")
-}
+suspend fun sayHello(request: ServerRequest) =
+    ok().bodyValueAndAwait("hello, world")
 
-val app = application(WebApplicationType.REACTIVE) {
+val app = reactiveWebApplication {
     webFlux {
         port = System.getenv("PORT")?.toInt() ?: 8080
         coRouter {
             GET("/", ::sayHello)
+        }
+        codecs {
+            string()
+            jackson()
         }
     }
 }
